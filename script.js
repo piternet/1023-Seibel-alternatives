@@ -12,6 +12,18 @@ window.onload = function() {
             trainingSessionShow: false,
             timeInput: "",
             nameInput: "",
+            bulbs: [
+                {id: 'b1', class: 'nb'},
+                {id: 'b2', class: 'nb'},
+                {id: 'b3', class: 'nb'},
+                {id: 'b4', class: 'nb'},
+                {id: 'b5', class: 'nb'},
+                {id: 'b6', class: 'nb'},
+                {id: 'b7', class: 'nb'},
+                {id: 'b8', class: 'nb'},
+                {id: 'b9', class: 'nb'},
+                {id: 'b10', class: 'nb'},
+            ]
         },
         methods: {
             startConfigure: function(event) {
@@ -47,9 +59,20 @@ window.onload = function() {
                 this.title = "Sesja treningowa";
             },
 
+            setRandomBulbs: function() {
+                this.bulbs.forEach(
+                    function(item) {
+                        let random = Math.floor((Math.random() * 2) + 1);
+                        if(random == 1)
+                            item.class = 'ab';
+                    }
+                );
+            },
+
             startTraining: function(event) {
                 this.trainingSessionInfoShow = false;
                 this.trainingSessionShow = true;
+                this.setRandomBulbs();
             }
 
 

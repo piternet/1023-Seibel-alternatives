@@ -73,7 +73,9 @@
               </div>
 
               <div class="content" v-show="trainingSessionShow">
-
+                  <div class="bulbs">
+                      <div v-for="bulb in bulbs" class="holder" :id="bulb.id" :class="bulb.class"></div>
+                  </div>
               </div>
 
             </div>

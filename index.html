@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset='utf-8' />
+    <!-- bootstrap  -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css"
+        integrity="sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.3/umd/popper.min.js" integrity="sha384-vFJXuSJphROIrBnz7yo7oB41mKfc8JzQZiCq4NCceLEaO4IHwicKwpJf9c9IpFgh"
+        crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js" integrity="sha384-alpBpkh1PFOepccYVYDB4do5UnbKysX5WZXm3XxPqe5iKTfUKjNkCk9SaVuEZflJ"
+        crossorigin="anonymous"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <!-- end-bootstrap  -->
+    <script src="https://unpkg.com/vue"></script>
+    <link rel="stylesheet" type="text/css" href="style.css" />
+    <script src="script.js"></script>
+</head
+
+<body>
+    <div class="mx-auto" class="container" id="app">
+        <div class="jumbotron">
+            <div class="container">
+              <h1 class="display-3" style="margin-top: 3%;" id="title">{{ title }}</h1>
+              <div class="content" v-show="startMessageShow">
+                  <p class="lead">
+                      Witaj w interfejsie eksperymentatora. Aktualnie nie masz żadnej rozpoczętej sesji.
+                      <br />Aby rozpocząć nową sesję, kliknij przycisk poniżej.
+                  </p>
+                  <p><a v-on:click="startConfigure" class="btn btn-primary btn-lg" href="#" role="button" id="start_configure">Rozpocznij sesję &raquo;</a></p>
+              </div>
+
+              <div class="content" v-show="configurePanelShow">
+                  <p class="lead">
+                      Skonfiguruj nową sesję:
+                  </p>
+                  <div style="margin-bottom: 2%;">
+                      <button type="button" class="btn btn-outline-dark loopback" type="submit" id="withLoopback" v-on:click="showDetails">Tryb bez sprzężenia zwrotnego</button>
+                      <button type="button" class="btn btn-outline-dark loopback" type="submit" id="withoutLoopback" v-on:click="showDetails">Tryb ze sprzężeniem zwrotnym</button>
+                  </div>
+                  <div v-show="detailsShow" style="margin-bottom: 2%;">
+                      <button type="button" class="btn btn-outline-secondary time" type="submit" id="constantTime" v-on:click="showInput">Lampy palą się przez stały czas</button>
+                      <button type="button" class="btn btn-outline-secondary time" type="submit" id="changeTime" v-on:click="showInput">Lampy palą się do naciśnięcia przycisku</button>
+                  </div>
+                  <div v-show="inputShow" style="width:40%; margin-bottom: 2%;">
+                      <input type="number" v-model.number="timeInput" v-on:change="showName" class="form-control" id="timeInput" placeholder="Podaj czas (w milisekundach)">
+                  </div>
+                  <div v-show="nameShow" style="width:40%;">
+                      <input type="text" v-model="nameInput" v-on:change="activateButton" class="form-control" id="nameInput" placeholder="Podaj pseudonim użytkownika">
+                  </div>
+                  <p style="margin-top:2%;"><a v-on:click="startSession" class="btn btn-primary btn-lg disabled" href="#" role="button" id="start_session">Start &raquo;</a></p>
+              </div>
+
+              <div class="content" v-show="trainingSessionInfoShow">
+                  <p class="lead">
+                      Przed rozpoczęciem eksperymentu, prosimy o zapoznanie się z poniższymi zasadami:
+                  </p>
+
+                  <p class="lead">
+                      <ul>
+                          <li>Podczas eksperymentu, na ekranie wyświetlane będzie 10 żarówek. Każda z nich będzie zapalona lub zgaszona.</li>
+                          <li>Twoim zadaniem jest zgasić wszystkie zapalone żarówki, przy pomocy odpowiadających im klawiszy.</li>
+                          <li>Żarówkom odpowiadają klawisze z trzeciego rzędu klawiszy na klawiaturze, tj. <code>asdfghjkl;</code></li>
+                          <li>Pierwszej żarówce odpowiada klawisz z literą <code>a</code> na klawiaturze, drugiej odpowiada <code>s</code> itd.</li>
+                          <li>Ostatniej żarówce odpowiada klawisz ze znakiem <code>;</code></li>
+                          <li>Przed właściwą sesją eksperymentalną, przez pięć pierwszych konfiguracji, trwać będzie sesja treningowa.</li>
+                          <li>Ma ona na celu zapoznanie Cię ze środowiskiem. Jej wyniki nie będą uwzględniane.</li>
+                      </ul>
+                  </p>
+
+                  <p><a v-on:click="startTraining" class="btn btn-primary btn-lg" href="#" role="button" id="start_training">Rozumiem, chcę rozpocząć sesję treningową &raquo;</a></p>
+              </div>
+
+              <div class="content" v-show="trainingSessionShow">
+
+              </div>
+
+            </div>
+      </div>
+  </div>
+</body>
+
+</html>

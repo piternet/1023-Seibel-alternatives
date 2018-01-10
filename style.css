@@ -31,6 +31,10 @@ body {
   float: right;
   margin: 30px;
   position: fixed;
-  top: 0px;
+  top: 20px;
   right: 50px;
+}
+
+.jumbotron {
+  padding-bottom: 30%;s
 }

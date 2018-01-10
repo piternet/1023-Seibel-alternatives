@@ -35,6 +35,7 @@ window.onload = function() {
             trainingSessionInfoShow: false,
             trainingSessionShow: false,
             properSessionShow: false,
+            endInfoShow: false,
             timeInput: "",
             nameInput: "",
             loopback: false,
@@ -42,7 +43,12 @@ window.onload = function() {
             trainingCounter: 1,
             properCounter: 1,
             subsets: [],
+            timesToClick: [],
             trainingInterval: null,
+            startTime: null,
+            time: null,
+            secondsElapsed: 0,
+            paused: false,
             bulbs: [
                 {id: 'b1', class: 'nb'},
                 {id: 'b2', class: 'nb'},
@@ -63,6 +69,14 @@ window.onload = function() {
                         return false;
                 }
                 return true;
+            },
+
+            startPause: function() {
+                this.paused = true;
+            },
+
+            stopPause: function() {
+                this.paused = false;
             },
 
             startConfigure: function(event) {
@@ -136,6 +150,7 @@ window.onload = function() {
                     else
                         this.bulbs[i].class = 'nb';
                 }
+                this.time = new Date();
             },
 
             newTrainingRound: function() {
@@ -164,9 +179,13 @@ window.onload = function() {
 
             newProperRound: function() {
                 if(this.properCounter == 1024) {
-                    alert("Zakończono sesję eksperymentalną.")
+                    this.properSessionShow = false;
+                    this.endInfoShow = true;
                 }
                 else {
+                    let diff = new Date() - this.time;
+                    this.timesToClick.push(diff);
+                    console.log(diff/1000 + ' s');
                     this.properCounter += 1;
                     this.title = "Sesja eksperymentalna (" + this.properCounter.toString() + "/1023)";
                     this.setNextBulbs();
@@ -178,6 +197,8 @@ window.onload = function() {
                 console.log(this.title);
                 this.properSessionShow = true;
                 this.trainingSessionShow = false;
+                this.startTime = new Date();
+                this.time = new Date();
                 for(let i=1; i<1024; i++) {
                     let binary = i.toString(2);
                     while(binary.length < 10) {
@@ -192,6 +213,10 @@ window.onload = function() {
                         app.newProperRound();
                     }, this.timeInput);
                 }
+                setInterval(function() {
+                    if(!this.paused)
+                        this.secondsElapsed += 1;
+                }, 1000);
             },
         }
     })
@@ -201,11 +226,10 @@ window.onload = function() {
         
         if(app.trainingSessionShow || app.properSessionShow) {
 
-            if(app.loopback && (!(key in keyIndexes) || app.bulbs[keyIndexes[key]].class == 'nb')) {
+            if(app.loopback && key in keyIndexes && app.bulbs[keyIndexes[key]].class == 'nb') {
                 let audio = new Audio('error.mp3');
                 audio.play();
             }
-
             if(key in keyIndexes && !app.constantTime) {
                 setTimeout(function() {
                     app.bulbs[keyIndexes[key]].class = 'nb';

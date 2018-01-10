@@ -78,9 +78,21 @@
                   </div>
               </div>
 
+              <div class="content" v-show="endInfoShow">
+                  <p class="lead">
+                      Sesja eksperymentalna właśnie się zakończyła. Zostały pokazane wszystkie 1023 kombinacje żarówek.
+                  </p>
+
+                  <p class="lead">
+                      Masz możliwość pobrania zebranych podczas sesji danych. Są one w formacie .csv. Dostępne są następujące informacje:
+                  </p>
+
+                  <p><a v-on:click="startTraining" class="btn btn-primary btn-lg" href="#" role="button" id="start_training">Pobierz &raquo;</a></p>
+              </div>
+
               <div id="pause" v-show="trainingSessionShow || properSessionShow">
                 <button type="button"
-                class="btn btn-primary btn-lg" data-toggle="modal" data-target="#myModal" v-on:click="">Pauza</button>
+                class="btn btn-primary btn-lg" data-toggle="modal" data-target="#myModal" v-on:click="startPause">Pauza</button>
 
               </div>
 
@@ -98,7 +110,7 @@
         Zapauzowałeś aktualną sesję. Czas trwania sesji został wstrzymany. Możesz wznowić aktualną sesję, klikając poniższy przycisk.
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-default" v-on:click="" data-dismiss="modal">Kontynuuj</button>
+        <button type="button" class="btn btn-default" v-on:click="stopPause" data-dismiss="modal">Kontynuuj</button>
       </div>
     </div>
   </div>

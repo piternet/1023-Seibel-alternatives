@@ -1,5 +1,5 @@
 body {
-    transform: scale(1.3);
+    transform: scale(1.1);
 }
 
 .bulbs {
@@ -25,4 +25,12 @@ body {
   content: "";
   display: inline-block;
   padding-top: 100%;
+}
+
+#pause {
+  float: right;
+  margin: 30px;
+  position: fixed;
+  top: 0px;
+  right: 50px;
 }

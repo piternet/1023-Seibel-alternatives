@@ -36,12 +36,12 @@
                       Skonfiguruj nową sesję:
                   </p>
                   <div style="margin-bottom: 2%;">
-                      <button type="button" class="btn btn-outline-dark loopback" type="submit" id="withLoopback" v-on:click="showDetails">Tryb bez sprzężenia zwrotnego</button>
-                      <button type="button" class="btn btn-outline-dark loopback" type="submit" id="withoutLoopback" v-on:click="showDetails">Tryb ze sprzężeniem zwrotnym</button>
+                      <button type="button" class="btn btn-outline-dark loopback" type="submit" id="withoutLoopback" v-on:click="noLoopbackClicked">Tryb bez sprzężenia zwrotnego</button>
+                      <button type="button" class="btn btn-outline-dark loopback" type="submit" id="withLoopback" v-on:click="loopbackClicked">Tryb ze sprzężeniem zwrotnym</button>
                   </div>
                   <div v-show="detailsShow" style="margin-bottom: 2%;">
-                      <button type="button" class="btn btn-outline-secondary time" type="submit" id="constantTime" v-on:click="showInput">Lampy palą się przez stały czas</button>
-                      <button type="button" class="btn btn-outline-secondary time" type="submit" id="changeTime" v-on:click="showInput">Lampy palą się do naciśnięcia przycisku</button>
+                      <button type="button" class="btn btn-outline-secondary time" type="submit" id="constantTime" v-on:click="constantTimeClicked">Lampy palą się przez stały czas</button>
+                      <button type="button" class="btn btn-outline-secondary time" type="submit" id="changeTime" v-on:click="changeTimeClicked">Lampy palą się do naciśnięcia przycisku</button>
                   </div>
                   <div v-show="inputShow" style="width:40%; margin-bottom: 2%;">
                       <input type="number" v-model.number="timeInput" v-on:change="showName" class="form-control" id="timeInput" placeholder="Podaj czas (w milisekundach)">
@@ -72,15 +72,38 @@
                   <p><a v-on:click="startTraining" class="btn btn-primary btn-lg" href="#" role="button" id="start_training">Rozumiem, chcę rozpocząć sesję treningową &raquo;</a></p>
               </div>
 
-              <div class="content" v-show="trainingSessionShow">
+              <div class="content" v-show="trainingSessionShow || properSessionShow">
                   <div class="bulbs">
                       <div v-for="bulb in bulbs" class="holder" :id="bulb.id" :class="bulb.class"></div>
                   </div>
               </div>
 
+              <div id="pause" v-show="trainingSessionShow || properSessionShow">
+                <button type="button"
+                class="btn btn-primary btn-lg" data-toggle="modal" data-target="#myModal" v-on:click="">Pauza</button>
+
+              </div>
+
             </div>
       </div>
   </div>
+
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title" id="myModalLabel">Pauza</h4>
+      </div>
+      <div class="modal-body">
+        Zapauzowałeś aktualną sesję. Czas trwania sesji został wstrzymany. Możesz wznowić aktualną sesję, klikając poniższy przycisk.
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" v-on:click="" data-dismiss="modal">Kontynuuj</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 </body>
 
 </html>

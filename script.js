@@ -27,6 +27,7 @@ window.onload = function() {
         el: '#app',
         data: {
             title: 'Interfejs eksperymentatora',
+            infoTitle: "",
             startMessageShow: true,
             configurePanelShow: false,
             detailsShow: false,
@@ -45,6 +46,7 @@ window.onload = function() {
             subsets: [],
             timesToClick: [],
             trainingInterval: null,
+            secondsInterval: null,
             startTime: null,
             time: null,
             secondsElapsed: 0,
@@ -129,7 +131,7 @@ window.onload = function() {
             startSession: function(event) {
                 this.configurePanelShow = false;
                 this.trainingSessionInfoShow = true;
-                this.title = "Sesja treningowa (" + this.trainingCounter.toString() + "/" + TRAINING_SESSIONS.toString() + ")";
+                this.title = "Informacje wstępne";
             },
 
             setRandomBulbs: function() {
@@ -169,6 +171,7 @@ window.onload = function() {
             startTraining: function(event) {
                 this.trainingSessionInfoShow = false;
                 this.trainingSessionShow = true;
+                this.title = "Sesja treningowa (" + this.trainingCounter.toString() + "/" + TRAINING_SESSIONS.toString() + ")";
                 this.setRandomBulbs();
                 if(this.constantTime) {
                     this.trainingInterval = setInterval(function() {
@@ -177,23 +180,31 @@ window.onload = function() {
                 }
             },
 
+            endSession: function() {
+                clearInterval(this.secondsInterval);
+                this.properSessionShow = false;
+                this.trainingSessionShow = false;
+                this.title = 'Koniec';
+                this.endInfoShow = true;
+            },
+
             newProperRound: function() {
                 if(this.properCounter == 1024) {
-                    this.properSessionShow = false;
-                    this.endInfoShow = true;
+                    this.endSession();
                 }
                 else {
-                    let diff = new Date() - this.time;
-                    this.timesToClick.push(diff);
-                    console.log(diff/1000 + ' s');
+                    let diff = (new Date() - this.time)/1000;
+                    this.timesToClick.push(diff.toString() + " s");
+                    console.log(diff + ' s');
                     this.properCounter += 1;
-                    this.title = "Sesja eksperymentalna (" + this.properCounter.toString() + "/1023)";
+                    this.infoTitle = "Sesja eksperymentalna (" + this.properCounter.toString() + "/1023)";
                     this.setNextBulbs();
                 }
             },
 
             startProperSession: function() {
-                this.title = "Sesja eksperymentalna (" + this.properCounter.toString() + "/1023)";
+                this.infoTitle = "Sesja eksperymentalna (" + this.properCounter.toString() + "/1023)";
+                this.title = "";
                 console.log(this.title);
                 this.properSessionShow = true;
                 this.trainingSessionShow = false;
@@ -208,24 +219,48 @@ window.onload = function() {
                 }
                 this.subsets = shuffle(this.subsets);
                 this.setNextBulbs();
+                this.secondsInterval = setInterval(function() {
+                    if(!this.paused)
+                        this.secondsElapsed += 1;
+                }, 1000);
+
                 if(this.constantTime) {
                     setInterval(function() {
                         app.newProperRound();
                     }, this.timeInput);
                 }
-                setInterval(function() {
-                    if(!this.paused)
-                        this.secondsElapsed += 1;
-                }, 1000);
             },
+
+            downloadResults: function(event) {
+                let rows = [[this.nameInput, this.startTime.toString(), new Date().toString(), this.secondsElapsed.toString()], 
+                             this.subsets.slice(0, this.properCounter-1), this.timesToClick];
+                console.log(rows);
+                let csvContent = "data:text/csv;charset=utf-8,";
+                rows.forEach(function(rowArray){
+                   let row = rowArray.join(",");
+                   csvContent += row + "\r\n"; // add carriage return
+                }); 
+                var encodedUri = encodeURI(csvContent);
+                window.open(encodedUri);
+            },
+
         }
     })
+    $('body').on('click', '#endSession', function() { app.endSession(); })
+
+    $('body').on('click', '#stopPause', function() { app.stopPause(); })
 
     window.onkeyup = function(event) {
         let key = event.keyCode ? event.keyCode : event.which;
-        
-        if(app.trainingSessionShow || app.properSessionShow) {
 
+        if(app.trainingSessionShow || app.properSessionShow) {
+            if(key == 80) {
+                // pause
+                app.startPause();
+                let title = app.properCounter ? app.infoTitle : app.title;
+                $('#myModalBody').html('<p>' + title + '</p>' + $('#myModalBody').html());
+                $('#myModal').modal('toggle');
+            }
             if(app.loopback && key in keyIndexes && app.bulbs[keyIndexes[key]].class == 'nb') {
                 let audio = new Audio('error.mp3');
                 audio.play();

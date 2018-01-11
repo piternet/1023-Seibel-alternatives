@@ -44,17 +44,14 @@
                       <button type="button" class="btn btn-outline-secondary time" type="submit" id="changeTime" v-on:click="changeTimeClicked">Lampy palą się do naciśnięcia przycisku</button>
                   </div>
                   <div v-show="inputShow" style="width:40%; margin-bottom: 2%;">
-                      <input type="number" v-model.number="timeInput" v-on:change="showName" class="form-control" id="timeInput" placeholder="Podaj czas (w milisekundach)">
-                  </div>
-                  <div v-show="nameShow" style="width:40%;">
-                      <input type="text" v-model="nameInput" v-on:change="activateButton" class="form-control" id="nameInput" placeholder="Podaj pseudonim użytkownika">
+                      <input type="number" v-model.number="timeInput" v-on:change="activateButton" class="form-control" id="timeInput" placeholder="Podaj czas (w milisekundach)">
                   </div>
                   <p style="margin-top:2%;"><a v-on:click="startSession" class="btn btn-primary btn-lg disabled" href="#" role="button" id="start_session">Start &raquo;</a></p>
               </div>
 
               <div class="content" v-show="trainingSessionInfoShow">
                   <p class="lead">
-                      Przed rozpoczęciem eksperymentu, prosimy o zapoznanie się z poniższymi zasadami:
+                      Przed rozpoczęciem eksperymentu, prosimy o zapoznanie się z poniższymi zasadami oraz o podanie pseudonimu:
                   </p>
 
                   <p class="lead">
@@ -70,12 +67,16 @@
                       </ul>
                   </p>
 
-                  <p><a v-on:click="startTraining" class="btn btn-primary btn-lg" href="#" role="button" id="start_training">Rozumiem, chcę rozpocząć sesję treningową &raquo;</a></p>
+                  <div style="width:40%; margin-bottom: 1%;">
+                      <input type="text" v-model="nameInput" v-on:change="activateStartButton" class="form-control" id="nameInput" placeholder="Podaj pseudonim użytkownika">
+                  </div>
+
+                  <p><a v-on:click="startTraining" class="btn btn-primary disabled" href="#" role="button" id="start_training">Rozumiem, chcę rozpocząć &raquo;</a></p>
               </div>
 
               <div class="content" v-show="trainingSessionShow || properSessionShow">
                   <div class="bulbs">
-                      <div v-for="bulb in bulbs" class="holder" :id="bulb.id" :class="bulb.class"></div>
+                      <div v-for="bulb in bulbs" class="holder" :id="bulb.id" :class="bulb.class"><span class="key">{{ bulb.key }}</span></div>
                   </div>
               </div>
 
@@ -92,6 +93,7 @@
                     <a v-on:click="downloadResults" class="btn btn-primary btn-lg" href="#" role="button" id="download">Pobierz &raquo;</a>
                     <a class="btn btn-success btn-lg" href="#" role="button" onclick="window.location.reload(false);">Rozpocznij nową sesję &raquo;</a>
                   </p>
+                  <pre><code id="results"></code></pre>
 
               </div>
 
@@ -112,8 +114,9 @@
         <h4 class="modal-title" id="myModalLabel">Pauza</h4>
       </div>
       <div class="modal-body" id="myModalBody">
-        
+        <p class="lead" id="title"></p>
         <p>Zapauzowałeś aktualną sesję. Czas trwania sesji został wstrzymany. Możesz wznowić aktualną sesję, klikając poniższy przycisk.</p>
+        <p id="times"></p>
       </div>
       <div class="modal-footer">
         <button type="button" id="endSession" class="btn btn-danger" v-on:click="endSession" data-dismiss="modal">Zakończ sesję</button>

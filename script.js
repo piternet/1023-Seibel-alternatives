@@ -52,16 +52,16 @@ window.onload = function() {
             secondsElapsed: 0,
             paused: false,
             bulbs: [
-                {id: 'b1', class: 'nb'},
-                {id: 'b2', class: 'nb'},
-                {id: 'b3', class: 'nb'},
-                {id: 'b4', class: 'nb'},
-                {id: 'b5', class: 'nb'},
-                {id: 'b6', class: 'nb'},
-                {id: 'b7', class: 'nb'},
-                {id: 'b8', class: 'nb'},
-                {id: 'b9', class: 'nb'},
-                {id: 'b10', class: 'nb'},
+                {id: 'b1', key: 'a', active: false, class: 'nb'},
+                {id: 'b2', key: 's', active: false, class: 'nb'},
+                {id: 'b3', key: 'd', active: false, class: 'nb'},
+                {id: 'b4', key: 'f', active: false, class: 'nb'},
+                {id: 'b5', key: 'g', active: false, class: 'nb'},
+                {id: 'b6', key: 'h', active: false, class: 'nb'},
+                {id: 'b7', key: 'j', active: false, class: 'nb'},
+                {id: 'b8', key: 'k', active: false, class: 'nb'},
+                {id: 'b9', key: 'l', active: false, class: 'nb'},
+                {id: 'b10', key: ';', active: false, class: 'nb'},
             ]
         },
         methods: {
@@ -128,6 +128,10 @@ window.onload = function() {
                 $("#start_session").removeClass('disabled');
             },
 
+            activateStartButton: function(event) {
+                $("#start_training").removeClass('disabled');
+            },
+
             startSession: function(event) {
                 this.configurePanelShow = false;
                 this.trainingSessionInfoShow = true;
@@ -138,8 +142,10 @@ window.onload = function() {
                 this.bulbs.forEach(
                     function(item) {
                         let random = Math.floor((Math.random() * 2) + 1);
-                        if(random == 1)
+                        if(random == 1) {
                             item.class = 'ab';
+                            item.active = true;
+                        }
                     }
                 );
             },
@@ -147,10 +153,14 @@ window.onload = function() {
             setNextBulbs: function() {
                 let index = this.properCounter-1;
                 for(let i=0; i<10; i++) {
-                    if(this.subsets[index][i] == '1')
+                    if(this.subsets[index][i] == '1') {
                         this.bulbs[i].class = 'ab';
-                    else
+                        this.bulbs[i].active = true;
+                    }
+                    else {
                         this.bulbs[i].class = 'nb';
+                        this.bulbs[i].active = false;
+                    }
                 }
                 this.time = new Date();
             },
@@ -194,7 +204,7 @@ window.onload = function() {
                 }
                 else {
                     let diff = (new Date() - this.time)/1000;
-                    this.timesToClick.push(diff.toString() + " s");
+                    this.timesToClick.push(diff.toString());
                     console.log(diff + ' s');
                     this.properCounter += 1;
                     this.infoTitle = "Sesja eksperymentalna (" + this.properCounter.toString() + "/1023)";
@@ -210,6 +220,7 @@ window.onload = function() {
                 this.trainingSessionShow = false;
                 this.startTime = new Date();
                 this.time = new Date();
+                this.secondsElapsed = 0;
                 for(let i=1; i<1024; i++) {
                     let binary = i.toString(2);
                     while(binary.length < 10) {
@@ -220,9 +231,10 @@ window.onload = function() {
                 this.subsets = shuffle(this.subsets);
                 this.setNextBulbs();
                 this.secondsInterval = setInterval(function() {
-                    if(!this.paused)
-                        this.secondsElapsed += 1;
-                }, 1000);
+                    if(!app.paused) {
+                        app.secondsElapsed += 0.01;
+                    }
+                }, 10);
 
                 if(this.constantTime) {
                     setInterval(function() {
@@ -232,16 +244,21 @@ window.onload = function() {
             },
 
             downloadResults: function(event) {
-                let rows = [[this.nameInput, this.startTime.toString(), new Date().toString(), this.secondsElapsed.toString()], 
-                             this.subsets.slice(0, this.properCounter-1), this.timesToClick];
+                let time = this.secondsElapsed.toFixed(2) + ' s';
+                let rows = [[this.nameInput, this.startTime.toString(), new Date().toString(), time]];
                 console.log(rows);
-                let csvContent = "data:text/csv;charset=utf-8,";
+                let csvContent = "";
                 rows.forEach(function(rowArray){
                    let row = rowArray.join(",");
                    csvContent += row + "\r\n"; // add carriage return
-                }); 
-                var encodedUri = encodeURI(csvContent);
-                window.open(encodedUri);
+                });
+                for(let i=0; i<this.timesToClick.length; i++) {
+                    let row = this.subsets[i] + ',' + this.timesToClick[i];
+                    csvContent += row + "\r\n"; // add carriage return
+                }
+                console.log(csvContent);
+                $("#results").html(csvContent);
+                window.location = encodeURI("data:text/csv;charset=utf-8," + csvContent);  
             },
 
         }
@@ -258,7 +275,8 @@ window.onload = function() {
                 // pause
                 app.startPause();
                 let title = app.properCounter ? app.infoTitle : app.title;
-                $('#myModalBody').html('<p>' + title + '</p>' + $('#myModalBody').html());
+                $('#myModalBody #title').html(title); 
+                $('#myModalBody #times').html("Czasy: " + app.timesToClick.join(', '));
                 $('#myModal').modal('toggle');
             }
             if(app.loopback && key in keyIndexes && app.bulbs[keyIndexes[key]].class == 'nb') {
@@ -285,4 +303,3 @@ window.onload = function() {
         }
     }
 }
-
